@@ -2,17 +2,27 @@
 /////////////////////////////////////////////
 
 var entities = [], count = 0;
-var io = require("socket.io").listen(30003);
+var io = require("socket.io").listen(3000);
 
+var killed = [];
+ 
 var INITIAL_X = 5;
 var INITIAL_Y = 5;
 var INITIAL_VEL_X = 0;
 var INITIAL_VEL_Y = 0;
 
+for (i=0;i<10;i++) {
+	killed[i]=0;
+}
+
 io.set('log level', 1);
 io.sockets.on("connection", function (socket) {
     var myNumber = count++;
-    //assign number    
+    //assign number
+	
+	INITIAL_X = Math.floor((Math.random()*1270)+5);
+	INITIAL_Y = Math.floor((Math.random()*1014)+5);
+	
     var mySelf = entities[myNumber] = [myNumber, INITIAL_X, INITIAL_Y, INITIAL_VEL_X, INITIAL_VEL_Y];
 
     //Send the initial position and ID to connecting player
@@ -67,18 +77,21 @@ console.log(myNumber + ' sent: ' + 'I,' + mySelf[0] + ',' + mySelf[1] + ',' + my
 				
 			break;			
 			
+			case 'D':
+				
+				killed[new_data[1]]++;
+				
+				socket.send('D,' + new_data[1] + ","+ killed[new_data[1]]);
+				console.log('D,'+new_data[1]+","+killed[new_data[1]]);
+				
+				
+			break;
+			
 			
 			default:
 			break;
 		}
-		
-		
-        if (new_data[0] == 'UM') {
-          
-        }
-        else if (new_data[0] == 'S') { // a s message
-            
-        }
+		        
     });
 
 });
