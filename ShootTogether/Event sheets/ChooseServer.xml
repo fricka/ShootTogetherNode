@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c2eventsheet>
+    <!--All the 'name' attributes are ignored by Construct 2 - they are there for readability only.-->
+    <name>ChooseServer</name>
+    <events>
+        <event-block sid="1340283361196174">
+            <conditions>
+                <condition id="0" name="On clicked" sid="6943316836359397" type="Button" />
+            </conditions>
+            <actions>
+                <action id="-10" name="Set value" sid="3297207719070517" type="Controller">
+                    <param id="0" name="Instance variable">ServerAddress</param>
+                    <param id="1" name="Value">ServerAddressTxt.Text</param>
+                </action>
+                <action id="-10" name="Set value" sid="2287345334610657" type="Controller">
+                    <param id="0" name="Instance variable">ServerPort</param>
+                    <param id="1" name="Value">int(PortTxt2.Text)</param>
+                </action>
+                <action id="-2" name="Go to layout" sid="8337313105860206" type="System">
+                    <param id="0" name="Layout">Layout 1</param>
+                </action>
+                <action id="10" name="Request fullscreen" sid="8682548774906707" type="Browser">
+                    <param id="0" name="Mode">2</param>
+                </action>
+            </actions>
+        </event-block>
+    </events>
+</c2eventsheet>

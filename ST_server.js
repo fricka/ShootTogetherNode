@@ -4,16 +4,10 @@
 var entities = [], count = 0;
 var io = require("socket.io").listen(3000);
 
-var killed = [];
- 
 var INITIAL_X = 5;
 var INITIAL_Y = 5;
 var INITIAL_VEL_X = 0;
 var INITIAL_VEL_Y = 0;
-
-for (i=0;i<10;i++) {
-	killed[i]=0;
-}
 
 io.set('log level', 1);
 io.sockets.on("connection", function (socket) {
@@ -23,7 +17,7 @@ io.sockets.on("connection", function (socket) {
 	INITIAL_X = Math.floor((Math.random()*1270)+5);
 	INITIAL_Y = Math.floor((Math.random()*1014)+5);
 	
-    var mySelf = entities[myNumber] = [myNumber, INITIAL_X, INITIAL_Y, INITIAL_VEL_X, INITIAL_VEL_Y];
+    var mySelf = entities[myNumber] = [myNumber, INITIAL_X, INITIAL_Y, INITIAL_VEL_X, INITIAL_VEL_Y, 0];
 
     //Send the initial position and ID to connecting player
 console.log(myNumber + ' sent: ' + 'I,' + mySelf[0] + ',' + mySelf[1] + ',' + mySelf[2]);
@@ -77,13 +71,12 @@ console.log(myNumber + ' sent: ' + 'I,' + mySelf[0] + ',' + mySelf[1] + ',' + my
 				
 			break;			
 			
-			case 'D':
+			case 'K':
 				
-				killed[new_data[1]]++;
+				entities[new_data[1]] = [new_data[1], new_data[2], new_data[3], 0, 0, 0];
 				
-				socket.send('D,' + new_data[1] + ","+ killed[new_data[1]]);
-				console.log('D,'+new_data[1]+","+killed[new_data[1]]);
-				
+				socket.broadcast.emit("message",
+				'UM,' + new_data[1] + ',' + new_data[2] + ',' + mySelf[3] + ',0,0,0');
 				
 			break;
 			

@@ -1,0 +1,680 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c2eventsheet>
+    <!--All the 'name' attributes are ignored by Construct 2 - they are there for readability only.-->
+    <name>Event sheet 1</name>
+    <events>
+        <variable constant="0" name="ID" sid="1316066314332185" static="0" type="number">0</variable>
+        <event-block sid="4404849551709564">
+            <conditions>
+                <condition id="-2" name="On start of layout" sid="8614906554753922" type="System" />
+            </conditions>
+            <actions>
+                <action id="0" name="Connect" sid="5002879008304849" type="Socket">
+                    <param id="0" name="Address">Controller.ServerAddress</param>
+                    <param id="1" name="Port">Controller.ServerPort</param>
+                </action>
+                <action behavior="8Direction" id="8" name="Set enabled" sid="5022477595512969" type="Player">
+                    <param id="0" name="State">0</param>
+                </action>
+            </actions>
+            <sub-events>
+                <event-block sid="8564218418408191">
+                    <conditions>
+                        <condition id="-4" name="Is outside layout" sid="7702357359816359" type="Player" />
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Destroy" sid="5032726584827676" type="Player" />
+                    </actions>
+                </event-block>
+                <event-block sid="6095984979885111">
+                    <conditions>
+                        <condition id="-20" inverted="1" name="Is on mobile device" sid="5069580764813693" type="System" />
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Destroy" sid="259812606924917" type="TouchButton1" />
+                    </actions>
+                </event-block>
+            </sub-events>
+        </event-block>
+        <comment>sEND A POSITION AND VELOCITY UPDATE MESSAGE</comment>
+        <event-block sid="8626873002612924">
+            <conditions>
+                <condition id="-6" name="Every X seconds" sid="5631061820422215" type="System">
+                    <param id="0" name="Interval (seconds)">0.07</param>
+                </condition>
+            </conditions>
+            <actions>
+                <action id="2" name="Send" sid="546185643924051" type="Socket">
+                    <param id="0" name="Data">&quot;UM,&quot; &amp; str(round(Player.X)) &amp; &quot;,&quot; &amp; str(round(Player.Y)) &amp; &quot;,&quot; &amp;  str( round(Player.8Direction.VectorX)) &amp; &quot;,&quot; &amp; str(round(Player.8Direction.VectorY) )&amp;&quot;,&quot;&amp;str(Player.Angle)</param>
+                </action>
+            </actions>
+        </event-block>
+        <event-group collapsed="1" description="" sid="3229729617817909" title="Conexão Socket.io">
+            <sub-events>
+                <event-block sid="3963987678848077">
+                    <conditions>
+                        <condition id="1" name="On connect" sid="4081347159529235" type="Socket" />
+                    </conditions>
+                    <actions />
+                </event-block>
+                <event-block sid="175859997558536">
+                    <conditions>
+                        <condition id="4" name="Is Data Available?" sid="3618310308709933" type="Socket" />
+                    </conditions>
+                    <actions>
+                        <action id="3" name="SplitDataReceived" sid="8591151646785792" type="Socket" />
+                    </actions>
+                    <sub-events>
+                        <comment>Is the message an initialization message?</comment>
+                        <event-block sid="9744359878809297">
+                            <conditions>
+                                <condition id="-8" name="Compare two values" sid="9424984878188159" type="System">
+                                    <param id="0" name="First value">Socket.LastDataElement(0)</param>
+                                    <param id="1" name="Comparison">0</param>
+                                    <param id="2" name="Second value">&quot;I&quot;</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-3" name="Create object" sid="3635098804334603" type="System">
+                                    <param id="0" name="Object to create">Player</param>
+                                    <param id="1" name="Layer">0</param>
+                                    <param id="2" name="X">int(Socket.LastDataElement(2))</param>
+                                    <param id="3" name="Y">int(Socket.LastDataElement(3))</param>
+                                </action>
+                                <action id="-10" name="Set value" sid="4371420595652669" type="Player">
+                                    <param id="0" name="Instance variable">NetworkID</param>
+                                    <param id="1" name="Value">int(Socket.LastDataElement(1))</param>
+                                </action>
+                                <action behavior="CustomMovement" id="12" name="Set enabled" sid="5578550265379906" type="Player">
+                                    <param id="0" name="State">0</param>
+                                </action>
+                                <action id="-10" name="Set value" sid="4978750509442888" type="Controller">
+                                    <param id="0" name="Instance variable">MineID</param>
+                                    <param id="1" name="Value">int(Socket.LastDataElement(1))</param>
+                                </action>
+                                <action id="-10" name="Set value" sid="4518002163656918" type="Controller">
+                                    <param id="0" name="Instance variable">MineUID</param>
+                                    <param id="1" name="Value">Player.UID</param>
+                                </action>
+                                <action id="2" name="Set at X" sid="2611655236157054" type="Array">
+                                    <param id="0" name="X">int(Socket.LastDataElement(1))</param>
+                                    <param id="1" name="Value">Player.UID</param>
+                                </action>
+                                <action id="0" name="Set text" sid="7276750463836074" type="HealthTxt">
+                                    <param id="0" name="Text">Player.Health</param>
+                                </action>
+                                <action id="5" name="Set frame" sid="3699709310789796" type="Player">
+                                    <param id="0" name="Frame number">Player.NetworkID</param>
+                                </action>
+                                <action id="-8" name="Scroll to object" sid="8025577227584727" type="System">
+                                    <param id="0" name="Object">Player</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <comment>Is the message an creation message? (prevents creating our own object: MineID != ...)</comment>
+                        <event-block sid="8561395729935178">
+                            <conditions>
+                                <condition id="-8" name="Compare two values" sid="4377938150291237" type="System">
+                                    <param id="0" name="First value">Socket.LastDataElement(0)</param>
+                                    <param id="1" name="Comparison">0</param>
+                                    <param id="2" name="Second value">&quot;C&quot;</param>
+                                </condition>
+                                <condition id="-7" name="Compare instance variable" sid="5441796227292002" type="Controller">
+                                    <param id="0" name="Instance variable">MineID</param>
+                                    <param id="1" name="Comparison">1</param>
+                                    <param id="2" name="Value">int(Socket.LastDataElement(1))</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-3" name="Create object" sid="361591264829399" type="System">
+                                    <param id="0" name="Object to create">Player</param>
+                                    <param id="1" name="Layer">0</param>
+                                    <param id="2" name="X">int(Socket.LastDataElement(2))</param>
+                                    <param id="3" name="Y">int(Socket.LastDataElement(3))</param>
+                                </action>
+                                <action id="-10" name="Set value" sid="638666382649182" type="Player">
+                                    <param id="0" name="Instance variable">NetworkID</param>
+                                    <param id="1" name="Value">int(Socket.LastDataElement(1))</param>
+                                </action>
+                                <action behavior="8Direction" id="2" name="Set ignoring input" sid="882693048291146" type="Player">
+                                    <param id="0" name="Input">1</param>
+                                </action>
+                                <action id="2" name="Set at X" sid="3941479718306383" type="Array">
+                                    <param id="0" name="X">int(Socket.LastDataElement(1))</param>
+                                    <param id="1" name="Value">Player.UID</param>
+                                </action>
+                                <action id="5" name="Set frame" sid="9522512061968771" type="Player">
+                                    <param id="0" name="Frame number">Player.NetworkID</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <comment>Is the message a shoot message?</comment>
+                        <event-block sid="5794567417850783">
+                            <conditions>
+                                <condition id="-8" name="Compare two values" sid="8770428747820832" type="System">
+                                    <param id="0" name="First value">Socket.LastDataElement(0)</param>
+                                    <param id="1" name="Comparison">0</param>
+                                    <param id="2" name="Second value">&quot;S&quot;</param>
+                                </condition>
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <event-block sid="2324636756594123">
+                                    <conditions>
+                                        <condition id="-7" name="Compare instance variable" sid="9437322539621709" type="Controller">
+                                            <param id="0" name="Instance variable">MineID</param>
+                                            <param id="1" name="Comparison">1</param>
+                                            <param id="2" name="Value">int(Socket.LastDataElement(1))</param>
+                                        </condition>
+                                        <condition id="-14" name="Pick by unique ID" sid="9475399919127378" type="Player">
+                                            <param id="0" name="Unique ID">Array.At(int(Socket.LastDataElement(1)))</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="-3" name="Create object" sid="6147067077506017" type="System">
+                                            <param id="0" name="Object to create">Bullet</param>
+                                            <param id="1" name="Layer">0</param>
+                                            <param id="2" name="X">int(Socket.LastDataElement(2))</param>
+                                            <param id="3" name="Y">int(Socket.LastDataElement(3))</param>
+                                        </action>
+                                        <action behavior="Bullet" id="3" name="Set angle of motion" sid="1931670688887956" type="Bullet">
+                                            <param id="0" name="Angle">int(Socket.LastDataElement(4))</param>
+                                        </action>
+                                        <action id="-10" name="Set value" sid="6826891357076232" type="Bullet">
+                                            <param id="0" name="Instance variable">owneruid</param>
+                                            <param id="1" name="Value">Player.UID</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                        <comment>Is the message an update message?</comment>
+                        <event-block sid="6626956499104684">
+                            <conditions>
+                                <condition id="-8" name="Compare two values" sid="9702785605910011" type="System">
+                                    <param id="0" name="First value">Socket.LastDataElement(0)</param>
+                                    <param id="1" name="Comparison">0</param>
+                                    <param id="2" name="Second value">&quot;UM&quot;</param>
+                                </condition>
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <event-block sid="5034205006056411">
+                                    <conditions>
+                                        <condition id="-7" name="Compare instance variable" sid="2058245736544303" type="Controller">
+                                            <param id="0" name="Instance variable">MineID</param>
+                                            <param id="1" name="Comparison">1</param>
+                                            <param id="2" name="Value">int(Socket.LastDataElement(1))</param>
+                                        </condition>
+                                        <condition id="-14" name="Pick by unique ID" sid="6017207546671273" type="Player">
+                                            <param id="0" name="Unique ID">Array.At(int(Socket.LastDataElement(1)))</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="-3" name="Set position" sid="9985240209775178" type="Player">
+                                            <param id="0" name="X">int(Socket.LastDataElement(2))</param>
+                                            <param id="1" name="Y">int(Socket.LastDataElement(3))</param>
+                                        </action>
+                                        <action behavior="CustomMovement" id="2" name="Set speed" sid="3836228939684765" type="Player">
+                                            <param id="0" name="Which">1</param>
+                                            <param id="1" name="Speed">int(Socket.LastDataElement(4))</param>
+                                        </action>
+                                        <action behavior="CustomMovement" id="2" name="Set speed" sid="1003763542145842" type="Player">
+                                            <param id="0" name="Which">2</param>
+                                            <param id="1" name="Speed">int(Socket.LastDataElement(5))</param>
+                                        </action>
+                                        <action id="-8" name="Set angle" sid="1900390922845816" type="Player">
+                                            <param id="0" name="Angle">int(Socket.LastDataElement(6))</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                        <event-block disabled="1" sid="3452576210361024">
+                            <conditions>
+                                <condition id="-8" name="Compare two values" sid="3627739272147696" type="System">
+                                    <param id="0" name="First value">Socket.LastDataElement(0)</param>
+                                    <param id="1" name="Comparison">0</param>
+                                    <param id="2" name="Second value">&quot;D&quot;</param>
+                                </condition>
+                                <condition id="-7" name="Compare instance variable" sid="7792474272213056" type="Controller">
+                                    <param id="0" name="Instance variable">MineID</param>
+                                    <param id="1" name="Comparison">0</param>
+                                    <param id="2" name="Value">int(Socket.LastDataElement(1))</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="0" name="Set text" sid="6268372336411755" type="KilledTxt">
+                                    <param id="0" name="Text">Socket.LastDataElement(2)</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                    </sub-events>
+                </event-block>
+            </sub-events>
+        </event-group>
+        <event-group description="" sid="7701651211301684" title="Controle">
+            <sub-events>
+                <event-block sid="9163626163277857">
+                    <conditions>
+                        <condition id="-14" name="Pick by unique ID" sid="8542818756872519" type="Player">
+                            <param id="0" name="Unique ID">Controller.MineUID</param>
+                        </condition>
+                    </conditions>
+                    <actions />
+                    <sub-events>
+                        <event-block sid="5396972530071396">
+                            <conditions>
+                                <condition behavior="8Direction" id="0" name="Is moving" sid="5717894548387167" type="Player" />
+                            </conditions>
+                            <actions>
+                                <action id="-8" name="Scroll to object" sid="3026601095906458" type="System">
+                                    <param id="0" name="Object">Player</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="5493697484566199">
+                            <conditions>
+                                <condition id="-1" name="Every tick" sid="3917573316671604" type="System" />
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <event-block sid="5218614604362776">
+                                    <conditions>
+                                        <condition id="-20" inverted="1" name="Is on mobile device" sid="9532227023564274" type="System" />
+                                    </conditions>
+                                    <actions>
+                                        <action id="-22" name="Set angle toward position" sid="8202752513273579" type="Player">
+                                            <param id="0" name="X">Mouse.X</param>
+                                            <param id="1" name="Y">Mouse.Y</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                        <event-block sid="2153505769330887">
+                            <conditions>
+                                <condition id="-20" name="Is on mobile device" sid="5044928556864788" type="System" />
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <event-block sid="2409065867017406">
+                                    <conditions>
+                                        <condition id="4" name="Is touching object" sid="8701261495660386" type="Touch">
+                                            <param id="0" name="Object">blood</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="0" name="Spawn another object" sid="1746528434662488" type="Player">
+                                            <param id="0" name="Object">Bullet</param>
+                                            <param id="1" name="Layer">0</param>
+                                            <param id="2" name="Image point">1</param>
+                                        </action>
+                                        <action id="-10" name="Set value" sid="5813020314282438" type="Bullet">
+                                            <param id="0" name="Instance variable">owneruid</param>
+                                            <param id="1" name="Value">Player.UID</param>
+                                        </action>
+                                        <action id="-10" name="Set value" sid="4922164351259447" type="Bullet">
+                                            <param id="0" name="Instance variable">nid</param>
+                                            <param id="1" name="Value">Player.NetworkID</param>
+                                        </action>
+                                        <action id="2" name="Send" sid="671714917106079" type="Socket">
+                                            <param id="0" name="Data">&quot;S,&quot; &amp; str(round(Bullet.X)) &amp; &quot;,&quot; &amp; str(round(Bullet.Y)) &amp; &quot;,&quot; &amp;  str( round(Player.Angle)) </param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                        <event-block sid="6112528069474732">
+                            <conditions>
+                                <condition id="-22" name="Else" sid="9975329850735392" type="System" />
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <event-block sid="6266895598303553">
+                                    <conditions>
+                                        <condition id="0" name="On click" sid="9546738588101124" type="Mouse">
+                                            <param id="0" name="Mouse button">0</param>
+                                            <param id="1" name="Click type">0</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="0" name="Spawn another object" sid="1299038212854769" type="Player">
+                                            <param id="0" name="Object">Bullet</param>
+                                            <param id="1" name="Layer">0</param>
+                                            <param id="2" name="Image point">1</param>
+                                        </action>
+                                        <action id="-10" name="Set value" sid="2194127839409065" type="Bullet">
+                                            <param id="0" name="Instance variable">owneruid</param>
+                                            <param id="1" name="Value">Player.UID</param>
+                                        </action>
+                                        <action id="-10" name="Set value" sid="2554775716630846" type="Bullet">
+                                            <param id="0" name="Instance variable">nid</param>
+                                            <param id="1" name="Value">Player.NetworkID</param>
+                                        </action>
+                                        <action id="2" name="Send" sid="8353851241313778" type="Socket">
+                                            <param id="0" name="Data">&quot;S,&quot; &amp; str(round(Bullet.X)) &amp; &quot;,&quot; &amp; str(round(Bullet.Y)) &amp; &quot;,&quot; &amp;  str( round(Player.Angle)) </param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                    </sub-events>
+                </event-block>
+                <event-group description="" sid="5546278836047539" title="ControleTouch">
+                    <sub-events>
+                        <event-block sid="5311768846856111">
+                            <conditions>
+                                <condition id="-20" name="Is on mobile device" sid="8656519299783223" type="System" />
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <event-block collapsed="1" sid="2498202578128611">
+                                    <conditions>
+                                        <condition id="4" name="Is touching object" sid="8820302753790839" type="Touch">
+                                            <param id="0" name="Object">TouchButton1</param>
+                                        </condition>
+                                        <condition id="-14" name="Pick by unique ID" sid="751459781857767" type="Player">
+                                            <param id="0" name="Unique ID">Controller.MineUID</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions />
+                                    <sub-events>
+                                        <event-block sid="5159732588964454">
+                                            <conditions>
+                                                <condition id="-7" name="Compare instance variable" sid="130353067167158" type="TouchButton1">
+                                                    <param id="0" name="Instance variable">type</param>
+                                                    <param id="1" name="Comparison">0</param>
+                                                    <param id="2" name="Value">0</param>
+                                                </condition>
+                                            </conditions>
+                                            <actions>
+                                                <action behavior="8Direction" id="7" name="Simulate control" sid="6565526660964034" type="Player">
+                                                    <param id="0" name="Control">1</param>
+                                                </action>
+                                            </actions>
+                                        </event-block>
+                                        <event-block sid="7249644904960155">
+                                            <conditions>
+                                                <condition id="-7" name="Compare instance variable" sid="9042215363570466" type="TouchButton1">
+                                                    <param id="0" name="Instance variable">type</param>
+                                                    <param id="1" name="Comparison">0</param>
+                                                    <param id="2" name="Value">1</param>
+                                                </condition>
+                                            </conditions>
+                                            <actions>
+                                                <action behavior="8Direction" id="7" name="Simulate control" sid="6908497898785791" type="Player">
+                                                    <param id="0" name="Control">2</param>
+                                                </action>
+                                            </actions>
+                                        </event-block>
+                                        <event-block sid="6052435383503304">
+                                            <conditions>
+                                                <condition id="-7" name="Compare instance variable" sid="4408382517832537" type="TouchButton1">
+                                                    <param id="0" name="Instance variable">type</param>
+                                                    <param id="1" name="Comparison">0</param>
+                                                    <param id="2" name="Value">2</param>
+                                                </condition>
+                                            </conditions>
+                                            <actions>
+                                                <action behavior="8Direction" id="7" name="Simulate control" sid="5651544071702754" type="Player">
+                                                    <param id="0" name="Control">0</param>
+                                                </action>
+                                            </actions>
+                                        </event-block>
+                                        <event-block sid="6860585998344997">
+                                            <conditions>
+                                                <condition id="-7" name="Compare instance variable" sid="9882758884214288" type="TouchButton1">
+                                                    <param id="0" name="Instance variable">type</param>
+                                                    <param id="1" name="Comparison">0</param>
+                                                    <param id="2" name="Value">3</param>
+                                                </condition>
+                                            </conditions>
+                                            <actions>
+                                                <action behavior="8Direction" id="7" name="Simulate control" sid="7237463012386399" type="Player">
+                                                    <param id="0" name="Control">3</param>
+                                                </action>
+                                            </actions>
+                                        </event-block>
+                                    </sub-events>
+                                </event-block>
+                                <event-block sid="405590640897591">
+                                    <conditions>
+                                        <condition id="-22" name="Else" sid="4397580926260282" type="System" />
+                                    </conditions>
+                                    <actions>
+                                        <action id="-22" name="Set angle toward position" sid="9108530346084511" type="Player">
+                                            <param id="0" name="X">Touch.X</param>
+                                            <param id="1" name="Y">Touch.Y</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                    </sub-events>
+                </event-group>
+                <event-group description="" sid="3525146289803642" title="ControleTeclado">
+                    <sub-events>
+                        <event-block sid="9486845752959504">
+                            <conditions>
+                                <condition id="2" name="Key is down" sid="896508974215828" type="Keyboard">
+                                    <param id="0" name="Key">17 (Ctrl)</param>
+                                </condition>
+                                <condition id="-4" name="Trigger once while true" sid="2122243737462736" type="System" />
+                                <condition id="-14" name="Pick by unique ID" sid="973675942722956" type="Player">
+                                    <param id="0" name="Unique ID">Controller.MineUID</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="0" name="Spawn another object" sid="6575371307998883" type="Player">
+                                    <param id="0" name="Object">Bullet</param>
+                                    <param id="1" name="Layer">0</param>
+                                    <param id="2" name="Image point">1</param>
+                                </action>
+                                <action id="-10" name="Set value" sid="1202163027148657" type="Bullet">
+                                    <param id="0" name="Instance variable">owneruid</param>
+                                    <param id="1" name="Value">Player.UID</param>
+                                </action>
+                                <action id="-10" name="Set value" sid="3117053136724708" type="Bullet">
+                                    <param id="0" name="Instance variable">nid</param>
+                                    <param id="1" name="Value">Player.NetworkID</param>
+                                </action>
+                                <action id="2" name="Send" sid="1893380089671628" type="Socket">
+                                    <param id="0" name="Data">&quot;S,&quot; &amp; str(round(Bullet.X)) &amp; &quot;,&quot; &amp; str(round(Bullet.Y)) &amp; &quot;,&quot; &amp;  str( round(Player.Angle)) </param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="420249778307499">
+                            <conditions>
+                                <condition id="2" name="Key is down" sid="1605540237701599" type="Keyboard">
+                                    <param id="0" name="Key">87 (W)</param>
+                                </condition>
+                                <condition id="-14" name="Pick by unique ID" sid="6052822950453012" type="Player">
+                                    <param id="0" name="Unique ID">Controller.MineUID</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action behavior="8Direction" id="7" name="Simulate control" sid="2785153021681694" type="Player">
+                                    <param id="0" name="Control">2</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="7855610098187991">
+                            <conditions>
+                                <condition id="2" name="Key is down" sid="2005449664468898" type="Keyboard">
+                                    <param id="0" name="Key">83 (S)</param>
+                                </condition>
+                                <condition id="-14" name="Pick by unique ID" sid="8185941721994373" type="Player">
+                                    <param id="0" name="Unique ID">Controller.MineUID</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action behavior="8Direction" id="7" name="Simulate control" sid="7865231993148569" type="Player">
+                                    <param id="0" name="Control">3</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="1437747978387802">
+                            <conditions>
+                                <condition id="2" name="Key is down" sid="2204431738828114" type="Keyboard">
+                                    <param id="0" name="Key">65 (A)</param>
+                                </condition>
+                                <condition id="-14" name="Pick by unique ID" sid="3413051924601236" type="Player">
+                                    <param id="0" name="Unique ID">Controller.MineUID</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action behavior="8Direction" id="7" name="Simulate control" sid="9541152726912096" type="Player">
+                                    <param id="0" name="Control">0</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="7276551272347794">
+                            <conditions>
+                                <condition id="2" name="Key is down" sid="4305253614136663" type="Keyboard">
+                                    <param id="0" name="Key">68 (D)</param>
+                                </condition>
+                                <condition id="-14" name="Pick by unique ID" sid="3716825406792601" type="Player">
+                                    <param id="0" name="Unique ID">Controller.MineUID</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action behavior="8Direction" id="7" name="Simulate control" sid="9969682696944085" type="Player">
+                                    <param id="0" name="Control">1</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                    </sub-events>
+                </event-group>
+            </sub-events>
+        </event-group>
+        <event-group collapsed="1" description="" sid="296729438674432" title="Colisões">
+            <sub-events>
+                <event-block sid="633254840461274">
+                    <conditions>
+                        <condition id="1" name="Is overlapping another object" sid="5197177788293019" type="Bullet">
+                            <param id="0" name="Object">Sprite</param>
+                        </condition>
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Destroy" sid="4233469858112514" type="Bullet" />
+                    </actions>
+                </event-block>
+                <comment>Check for a bullet hit, only cause damage if the bullet does not belong to the player that shot the bullet</comment>
+                <event-block sid="3494816627607119">
+                    <conditions>
+                        <condition id="0" name="On collision with another object" sid="2717769007142486" type="Bullet">
+                            <param id="0" name="Object">Player</param>
+                        </condition>
+                        <condition id="-7" name="Compare instance variable" sid="3901060447187142" type="Bullet">
+                            <param id="0" name="Instance variable">owneruid</param>
+                            <param id="1" name="Comparison">1</param>
+                            <param id="2" name="Value">Player.UID</param>
+                        </condition>
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Destroy" sid="5958805914395402" type="Bullet" />
+                        <action id="-12" name="Subtract from" sid="6252169381385711" type="Player">
+                            <param id="0" name="Instance variable">Health</param>
+                            <param id="1" name="Value">1</param>
+                        </action>
+                    </actions>
+                    <sub-events>
+                        <event-block sid="7600970908514918">
+                            <conditions>
+                                <condition id="-7" name="Compare instance variable" sid="2083762427770941" type="Controller">
+                                    <param id="0" name="Instance variable">MineUID</param>
+                                    <param id="1" name="Comparison">0</param>
+                                    <param id="2" name="Value">Player.UID</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="0" name="Set text" sid="875548235124379" type="HealthTxt">
+                                    <param id="0" name="Text">Player.Health</param>
+                                </action>
+                                <action id="5" name="Set frame" sid="7889915240172848" type="blood">
+                                    <param id="0" name="Frame number">Player.Health</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="4281596326467653">
+                            <conditions>
+                                <condition id="-7" name="Compare instance variable" sid="4834732813176661" type="Player">
+                                    <param id="0" name="Instance variable">Health</param>
+                                    <param id="1" name="Comparison">3</param>
+                                    <param id="2" name="Value">0</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-10" name="Set value" sid="5816631477885558" type="Player">
+                                    <param id="0" name="Instance variable">Health</param>
+                                    <param id="1" name="Value">10</param>
+                                </action>
+                                <action id="-3" name="Set position" sid="952511934155472" type="Player">
+                                    <param id="0" name="X">LayoutWidth+1000</param>
+                                    <param id="1" name="Y">LayoutHeight+1000</param>
+                                </action>
+                                <action id="0" name="Set text" sid="5314076281514757" type="HealthTxt">
+                                    <param id="0" name="Text">Player.Health</param>
+                                </action>
+                                <action id="5" name="Set frame" sid="5817042320871256" type="blood">
+                                    <param id="0" name="Frame number">Player.Health</param>
+                                </action>
+                            </actions>
+                            <sub-events>
+                                <event-block sid="1336771658215692">
+                                    <conditions>
+                                        <condition id="-7" name="Compare instance variable" sid="4413723299863052" type="Controller">
+                                            <param id="0" name="Instance variable">MineUID</param>
+                                            <param id="1" name="Comparison">0</param>
+                                            <param id="2" name="Value">Bullet.owneruid</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="-11" name="Add to" sid="1048466564349715" type="Controller">
+                                            <param id="0" name="Instance variable">Killed</param>
+                                            <param id="1" name="Value">1</param>
+                                        </action>
+                                        <action id="0" name="Set text" sid="407164074262486" type="KilledTxt">
+                                            <param id="0" name="Text">Controller.Killed</param>
+                                        </action>
+                                        <action id="14" name="Log" sid="4701422013504799" type="Browser">
+                                            <param id="0" name="Type">0</param>
+                                            <param id="1" name="Message">&quot;K,&quot;&amp;Player.NetworkID&amp;&quot;,&quot;&amp;LayoutWidth+1000&amp;&quot;,&quot;&amp;LayoutHeight+1000</param>
+                                        </action>
+                                        <action id="2" name="Send" sid="921613964543049" type="Socket">
+                                            <param id="0" name="Data">&quot;K,&quot;&amp;Player.NetworkID&amp;&quot;,&quot;&amp;LayoutWidth+1000&amp;&quot;,&quot;&amp;LayoutHeight+1000</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <event-block sid="417574257583272">
+                                    <conditions>
+                                        <condition id="-14" name="Pick by unique ID" sid="7910332302326427" type="Player">
+                                            <param id="0" name="Unique ID">Controller.MineUID</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="-3" name="Set position" sid="8518617917710085" type="Player">
+                                            <param id="0" name="X">random(0,LayoutWidth)</param>
+                                            <param id="1" name="Y">random(0,LayoutHeight)</param>
+                                        </action>
+                                        <action id="-8" name="Scroll to object" sid="1624625102989347" type="System">
+                                            <param id="0" name="Object">Player</param>
+                                        </action>
+                                        <action id="-11" name="Add to" sid="7902904123191461" type="Player">
+                                            <param id="0" name="Instance variable">Died</param>
+                                            <param id="1" name="Value">1</param>
+                                        </action>
+                                        <action id="0" name="Set text" sid="6034207569388467" type="DiedTxt">
+                                            <param id="0" name="Text">Player.Died</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                    </sub-events>
+                </event-block>
+            </sub-events>
+        </event-group>
+    </events>
+</c2eventsheet>
